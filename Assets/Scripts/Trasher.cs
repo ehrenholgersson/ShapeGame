@@ -1,6 +1,11 @@
 using UnityEngine;
 
-public class Trasher : MonoBehaviour
+// Script sits on a collider left of screen to remove terrain pieces after they have past out of view
+// Spawns a new random piece of terrain every time one is removed
+// To Do -
+// * pool terrain pieces.
+// * Terrain should be grouped by difficulty, with the more difficult obstacles spawning more frequently over time
+public class Trasher : MonoBehaviour 
 {
     public GameObject lastSpawned;
 
