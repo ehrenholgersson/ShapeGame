@@ -153,10 +153,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   windParticles: {fileID: 2099800700}
-  gameOver: {fileID: 1149800812}
-  player: {fileID: 429010177}
+  _gameOver: {fileID: 1149800812}
+  _player: {fileID: 429010177}
   terrainList: {fileID: 11400000, guid: 808ddf7419931b94f839ee1b16e95609, type: 2}
-  worldSpeed: 8
+  _worldSpeed: 10
 --- !u!4 &183541331
 Transform:
   m_ObjectHideFlags: 0

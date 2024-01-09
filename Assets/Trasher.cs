@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Trasher : MonoBehaviour
 {
-    public GameObject Lastspawned;
+    public GameObject lastSpawned;
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
@@ -14,7 +12,7 @@ public class Trasher : MonoBehaviour
             Destroy(collision.gameObject);
             SpawnNew();
         }
-        else if (/*!(collision.transform.parent==null)&&*/collision.transform.parent.name.Contains("World"))
+        else if (collision.transform.parent.name.Contains("World"))
         {
             Destroy(collision.transform.parent.gameObject);
             SpawnNew();
@@ -22,10 +20,10 @@ public class Trasher : MonoBehaviour
     }
     private void SpawnNew()
     {
-        int rng = Random.Range(1, GameControl.Instance.terrainList.pieces.Count);
-        GameObject go = Instantiate(GameControl.Instance.terrainList.pieces[rng]);
-        go.transform.position = Lastspawned.transform.position + new Vector3(30,0,0);
-        Lastspawned = go;
+        int rng = Random.Range(1, GameControl.Instance._terrainList.pieces.Count);
+        GameObject go = Instantiate(GameControl.Instance._terrainList.pieces[rng]);
+        go.transform.position = lastSpawned.transform.position + new Vector3(30,0,0);
+        lastSpawned = go;
     }
 
     private void stupidtest(Rigidbody2D PlayerRB)
