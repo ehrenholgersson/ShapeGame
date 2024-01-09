@@ -46,7 +46,7 @@ public class GameControl : MonoBehaviour
         // reset the player
         _player.SetActive(true);
         _player.transform.position = new Vector3(-4, -3, 0);
-        // instansiate some new terrain (these should be pooled in future)
+        // instantiate some new terrain (these should be pooled in future)
         GameObject go = Instantiate(_terrainList.pieces[0]);
         go.transform.position = Vector3.zero;
         int rng = Random.Range(1, GameControl._instance._terrainList.pieces.Count);

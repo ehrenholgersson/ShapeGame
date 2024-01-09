@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Script sits on a collider left of screen to remove terrain pieces after they have past out of view
+// Script sits on a collider left of screen to remove terrain pieces after they have moved out of view
 // Spawns a new random piece of terrain every time one is removed
 // To Do -
 // * pool terrain pieces.
