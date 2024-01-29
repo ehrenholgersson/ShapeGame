@@ -5226,7 +5226,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7fd61fc1cdd26b449a47af368c6b581, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _giblet: {fileID: 0}
+  _giblet: {fileID: 6061670177736297642, guid: 52b60e440cfef844aa765e8908149660, type: 3}
 --- !u!61 &429010181
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5710,6 +5710,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eea4594910312a84b965eb63c0a80708, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1166795435 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5594102246364916060, guid: 70f3a79740971ac4e8c9ba8c912ba8af, type: 3}
+  m_PrefabInstance: {fileID: 1830842353}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1358523760
 GameObject:
   m_ObjectHideFlags: 0
@@ -5811,7 +5816,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c8beaddbe694454690974ef6833108b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lastSpawned: {fileID: 0}
+  lastSpawned: {fileID: 1166795435}
 --- !u!61 &1505834967
 BoxCollider2D:
   m_ObjectHideFlags: 0
