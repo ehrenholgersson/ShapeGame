@@ -30,6 +30,7 @@
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
       var fullscreenButton = document.querySelector("#unity-fullscreen-button");
       var warningBanner = document.querySelector("#unity-warning");
+      var loaded = false; //
 
       // Shows a temporary message banner/ribbon for a few seconds, or
       // a permanent error message on top of the canvas if type=='error'.
@@ -101,7 +102,8 @@
 
       var script = document.createElement("script");
       script.src = loaderUrl;
-      script.onload = () => {
+      canvas.onclick = () => {
+        if (!loaded){
         createUnityInstance(canvas, config, (progress) => {
           progressBarFull.style.width = 100 * progress + "%";
         }).then((unityInstance) => {
@@ -112,6 +114,7 @@
         }).catch((message) => {
           alert(message);
         });
+      }
       };
       document.body.appendChild(script);
     </script>
