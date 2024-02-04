@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Threading.Tasks;
+using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class GameControl : MonoBehaviour
@@ -7,27 +10,45 @@ public class GameControl : MonoBehaviour
     #region Variables
 
     static GameControl _instance;
+    float _timer = 0;
+    
+    List<TextMeshProUGUI> _timeReadouts = new List<TextMeshProUGUI>();
     [SerializeField] ParticleSystem _windParticles;
     [SerializeField] GameObject _gameOver;
     [SerializeField] GameObject _player;
-    [SerializeField] public TerrainList _terrainList; 
+    [SerializeField] public TerrainList _terrainList; // check if this needs to be private or a function
     [SerializeField] float _worldSpeed;
+
+    [SerializeField] Material _worldMaterial;
+    //[SerializeField] Material _windMaterial;
+    Color _levelColor = Color.yellow;
+    [SerializeField] float _maxColTransitionTime;
+    [SerializeField] float _minColTransitionTime;
+    [SerializeField] float _maxColHoldTime;
+    [SerializeField] float _minColHoldTime;
+    [SerializeField] Color _deadColor;
     [SerializeField] List<Color> _worldcolors = new List<Color>();
 
     #endregion
+
     #region Properties
 
     public static GameControl Instance { get => _instance ?? null; }
     public GameObject GameOver { get => _gameOver ?? null; }
     public GameObject Player { get => _player ?? null; }
     public float WorldSpeed { get => _worldSpeed; }
+    public static float RunTimer { get => _instance._timer; }
+    public static Color LevelColor { get => _instance._levelColor; }
 
     #endregion
 
+    #region Initialization
     // Start is called before the first frame update
     private void Awake()
     {
         // setup platform specific elements
+        #region Platform Specific Setup 
+
 #if UNITY_WEBGL
         Debug.Log("Running WebGL");
         foreach (GameObject ui in GameObject.FindGameObjectsWithTag("WebUI"))
@@ -36,8 +57,17 @@ public class GameControl : MonoBehaviour
             if (ui.name.Contains("GameOver"))
             {
                 _gameOver = ui;
+                ui.SetActive(false);
             }
-            ui.SetActive(false);
+            else if (ui.name.Contains("Timer"))
+            {
+                if (ui.TryGetComponent<TextMeshProUGUI>(out TextMeshProUGUI tmp))
+                {
+                    _timeReadouts.Add(tmp);
+                }
+            }
+
+
         }
         foreach (GameObject ui in GameObject.FindGameObjectsWithTag("DesktopUI"))
         {
@@ -88,19 +118,100 @@ public class GameControl : MonoBehaviour
             ui.SetActive(false);
         }
 #endif
+        #endregion
+
+        Application.targetFrameRate = 120;
+        _instance = this;
     }
     void Start()
     {
-        Application.targetFrameRate = 120;
-        _instance = this;
+
 
         // set wind particles speed to world speed
         var velocity = _windParticles.velocityOverLifetime;
         velocity.x = new ParticleSystem.MinMaxCurve(-_worldSpeed, -_worldSpeed);
         velocity.y = new ParticleSystem.MinMaxCurve(0, 0);//(0.1f * Random.Range(-10,10), 0.1f * Random.Range(-10, 10));
         velocity.z = new ParticleSystem.MinMaxCurve(0, 0);
+        _levelColor = _worldcolors[0];
+        _worldMaterial.SetColor("_Color", _levelColor);
+        //_windMaterial.SetColor("_TintColor", _levelColor);
+        ColorChanger();
     }
-    public void Restart() // reset everything back to how it started
+    #endregion
+
+    async void ColorChanger()
+    {
+        int nextColor = 1;//first colour should be 0 so the "next" colour is 1
+        float colorTime = Time.time;
+        float hold;
+        float transition;
+        Color oldColor;
+
+        if (_worldcolors.Count > 1) // no point if 1 or fewer colours
+        {
+            while (_instance != null)
+            {
+                if (_player.activeSelf)
+                {
+                    hold = UnityEngine.Random.Range(_minColHoldTime, _maxColHoldTime);
+                    transition = UnityEngine.Random.Range(_minColTransitionTime, _maxColTransitionTime);
+                    while ((Time.time < colorTime + hold)&&_player.activeSelf) 
+                    {
+                        await Task.Delay(16); // should update ~60 times a sec
+                    }
+                    colorTime = Time.time;
+                    oldColor = _levelColor;
+                    while ((Time.time < colorTime + transition) && _player.activeSelf)
+                    {
+                        _levelColor = Color.Lerp(oldColor, _worldcolors[nextColor], (Time.time - colorTime) / transition);
+                        // set material colours
+                        _worldMaterial.SetColor("_Color", _levelColor);
+                       // _windMaterial.SetColor("_TintColor", _levelColor);
+
+                        await Task.Delay(16); // should update ~60 times a sec
+                    }
+                    colorTime = Time.time;
+                    nextColor = UnityEngine.Random.Range(0, _worldcolors.Count);
+                }
+                else
+                {
+                    colorTime = Time.time;
+                    transition = 5;
+                    oldColor = _levelColor;
+                    while ((Time.time < colorTime + transition) && !Player.activeSelf) 
+                    {
+                        _levelColor = Color.Lerp(oldColor, _deadColor, (Time.time - colorTime) / transition);
+                        _worldMaterial.SetColor("_Color", _levelColor);
+                        await Task.Delay(16); // should update ~60 times a sec
+                    }
+                    colorTime = Time.time;
+                    transition = 5;
+                    oldColor = _levelColor;
+                    while ((Time.time < colorTime + transition) && !Player.activeSelf)
+                    {
+                        _levelColor = Color.Lerp(oldColor, Color.clear, (Time.time - colorTime) / transition);
+                        _worldMaterial.SetColor("_Color", _levelColor);
+                        await Task.Delay(16); // should update ~60 times a sec
+                    }
+                    return;
+                }
+                await Task.Delay(16); // should update ~60 times a sec
+            }
+        }
+    }
+    private void Update()
+    {
+        if ( Player.activeSelf)
+        {
+            _timer += Time.deltaTime;
+            foreach (TextMeshProUGUI tmp in _timeReadouts)
+            {
+                tmp.text = MathF.Floor(_timer) + ":" + MathF.Abs((int)((_timer % 1) * 100));
+            }
+        }
+       
+    }
+    public void Restart() // reset everything back to how it started, not sure if I should just reload the scene?
     {
         // destroy objects tagged as "reset"
         GameObject[] all = GameObject.FindGameObjectsWithTag("Reset"); 
@@ -116,15 +227,21 @@ public class GameControl : MonoBehaviour
         // instantiate some new terrain (these should be pooled in future)
         GameObject go = Instantiate(_terrainList.pieces[0]);
         go.transform.position = Vector3.zero;
-        int rng = Random.Range(1, GameControl._instance._terrainList.pieces.Count);
+        int rng = UnityEngine.Random.Range(1, GameControl._instance._terrainList.pieces.Count);
         go = Instantiate(GameControl._instance._terrainList.pieces[rng]);
         go.transform.position = new Vector3(30,0,0);
-        rng = Random.Range(1, GameControl._instance._terrainList.pieces.Count);
+        rng = UnityEngine.Random.Range(1, GameControl._instance._terrainList.pieces.Count);
         go = Instantiate(GameControl._instance._terrainList.pieces[rng]);
         go.transform.position = new Vector3(60, 0, 0);
         GameObject.FindAnyObjectByType<Trasher>().lastSpawned = go;
         // disable the gameover screen
         _gameOver.SetActive(false);
+        _timer = 0;
+        // reset our colours
+        _levelColor = _worldcolors[0];
+        _worldMaterial.SetColor("_Color", _levelColor);
+        //_windMaterial.SetColor("_TintColor", _levelColor);
+        ColorChanger();
     }
 
 }

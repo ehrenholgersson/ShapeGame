@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class TerrainMovement : MonoBehaviour
 {
-
     // Update is called once per frame
     void Update()
     {

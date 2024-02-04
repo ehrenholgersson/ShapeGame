@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour, IKillable
     bool _grounded;
     ParticleSystem _particle;
     bool _doubleJump = false;
+    Color _transperent = new Color(0, 0, 0, 0);
     [SerializeField] GameObject _giblet;
 
     // Start is called before the first frame update
@@ -53,6 +54,8 @@ public class PlayerMovement : MonoBehaviour, IKillable
         velocity.x = new ParticleSystem.MinMaxCurve(worldDirection.x, worldDirection.x);
         velocity.y = new ParticleSystem.MinMaxCurve(worldDirection.y, worldDirection.y);
         velocity.z = new ParticleSystem.MinMaxCurve(0, 0);
+        // change particle colors
+        _particle.startColor = GameControl.LevelColor;
     }
 
     private void OnCollisionStay2D(Collision2D collision) // using OnCollision for ground check, normally would check collision was at players "feet", but for this game its actually pretty fun to have any collision with the terrain work
