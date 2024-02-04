@@ -163,7 +163,7 @@ public class GameControl : MonoBehaviour
                     transition = UnityEngine.Random.Range(_minColTransitionTime, _maxColTransitionTime);
                     while ((Time.time < colorTime + hold)&&_player.activeSelf&& Instance!=null) 
                     {
-                        yield return null;
+                        yield return new WaitForFixedUpdate();
                     }
                     colorTime = Time.time;
                     oldColor = _levelColor;
@@ -175,7 +175,7 @@ public class GameControl : MonoBehaviour
                         _worldMaterial.SetColor("_Color", _levelColor);
                         // _windMaterial.SetColor("_TintColor", _levelColor);
 
-                        yield return null; // should update ~60 times a sec
+                        yield return new WaitForFixedUpdate(); ; // should update ~60 times a sec
                     }
                     colorTime = Time.time;
                     nextColor = UnityEngine.Random.Range(0, _worldcolors.Count);
