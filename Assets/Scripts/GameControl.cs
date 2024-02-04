@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 
 public class GameControl : MonoBehaviour
@@ -10,6 +12,7 @@ public class GameControl : MonoBehaviour
     [SerializeField] GameObject _player;
     [SerializeField] public TerrainList _terrainList; 
     [SerializeField] float _worldSpeed;
+    [SerializeField] List<Color> _worldcolors = new List<Color>();
 
     #endregion
     #region Properties
@@ -22,6 +25,70 @@ public class GameControl : MonoBehaviour
     #endregion
 
     // Start is called before the first frame update
+    private void Awake()
+    {
+        // setup platform specific elements
+#if UNITY_WEBGL
+        Debug.Log("Running WebGL");
+        foreach (GameObject ui in GameObject.FindGameObjectsWithTag("WebUI"))
+        {
+            Debug.Log("found UI object " + ui.name);
+            if (ui.name.Contains("GameOver"))
+            {
+                _gameOver = ui;
+            }
+            ui.SetActive(false);
+        }
+        foreach (GameObject ui in GameObject.FindGameObjectsWithTag("DesktopUI"))
+        {
+            ui.SetActive(false);
+        }
+        foreach (GameObject ui in GameObject.FindGameObjectsWithTag("MobileUI"))
+        {
+            ui.SetActive(false);
+        }
+#endif
+#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX
+        Debug.Log("Running Desktop");
+        foreach (GameObject ui in GameObject.FindGameObjectsWithTag("DesktopUI"))
+        {
+            Debug.Log("found UI object " + ui.name);
+            if (ui.name.Contains("GameOver"))
+            {
+                _gameOver = ui;
+            }
+            ui.SetActive(false);
+        }
+        foreach (GameObject ui in GameObject.FindGameObjectsWithTag("WebUI"))
+        {
+            ui.SetActive(false);
+        }
+        foreach (GameObject ui in GameObject.FindGameObjectsWithTag("MobileUI"))
+        {
+            ui.SetActive(false);
+        }
+#endif
+#if UNITY_ANDROID
+        Debug.Log("Running Mobile");
+        foreach (GameObject ui in GameObject.FindGameObjectsWithTag("MobileUI"))
+        {
+            Debug.Log("found UI object " + ui.name);
+            if (ui.name.Contains("GameOver"))
+            {
+                _gameOver = ui;
+            }
+            ui.SetActive(false);
+        }
+        foreach (GameObject ui in GameObject.FindGameObjectsWithTag("WebUI"))
+        {
+            ui.SetActive(false);
+        }
+        foreach (GameObject ui in GameObject.FindGameObjectsWithTag("DesktopUI"))
+        {
+            ui.SetActive(false);
+        }
+#endif
+    }
     void Start()
     {
         Application.targetFrameRate = 120;

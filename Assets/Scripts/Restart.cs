@@ -10,7 +10,12 @@ public class Restart : MonoBehaviour
         {
             GameControl.Instance.Restart();
         }
+#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX
         if (Input.GetKeyDown(KeyCode.Escape))
+        {
             Application.Quit();
+        }
+#endif
     }
+
 }
