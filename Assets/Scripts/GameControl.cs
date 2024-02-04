@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
@@ -21,7 +22,7 @@ public class GameControl : MonoBehaviour
 
     [SerializeField] Material _worldMaterial;
     //[SerializeField] Material _windMaterial;
-    Color _levelColor = Color.yellow;
+    Color _levelColor = Color.grey;
     [SerializeField] float _maxColTransitionTime;
     [SerializeField] float _minColTransitionTime;
     [SerializeField] float _maxColHoldTime;
@@ -135,12 +136,17 @@ public class GameControl : MonoBehaviour
         _levelColor = _worldcolors[0];
         _worldMaterial.SetColor("_Color", _levelColor);
         //_windMaterial.SetColor("_TintColor", _levelColor);
-        ColorChanger();
+        StartCoroutine(ColorChanger());
     }
     #endregion
 
-    async void ColorChanger()
+    IEnumerator ColorChanger()
     {
+        if (!_worldMaterial.HasProperty("_Color"))
+        {
+            Debug.Log("Material has no _Color property");
+            yield break; 
+        }
         int nextColor = 1;//first colour should be 0 so the "next" colour is 1
         float colorTime = Time.time;
         float hold;
@@ -149,26 +155,27 @@ public class GameControl : MonoBehaviour
 
         if (_worldcolors.Count > 1) // no point if 1 or fewer colours
         {
-            while (_instance != null)
+            while (Instance != null)
             {
                 if (_player.activeSelf)
                 {
                     hold = UnityEngine.Random.Range(_minColHoldTime, _maxColHoldTime);
                     transition = UnityEngine.Random.Range(_minColTransitionTime, _maxColTransitionTime);
-                    while ((Time.time < colorTime + hold)&&_player.activeSelf) 
+                    while ((Time.time < colorTime + hold)&&_player.activeSelf&& Instance!=null) 
                     {
-                        await Task.Delay(16); // should update ~60 times a sec
+                        yield return null;
                     }
                     colorTime = Time.time;
                     oldColor = _levelColor;
-                    while ((Time.time < colorTime + transition) && _player.activeSelf)
+                    Debug.Log("Change color");
+                    while ((Time.time < colorTime + transition) && _player.activeSelf && Instance != null)
                     {
                         _levelColor = Color.Lerp(oldColor, _worldcolors[nextColor], (Time.time - colorTime) / transition);
                         // set material colours
                         _worldMaterial.SetColor("_Color", _levelColor);
-                       // _windMaterial.SetColor("_TintColor", _levelColor);
+                        // _windMaterial.SetColor("_TintColor", _levelColor);
 
-                        await Task.Delay(16); // should update ~60 times a sec
+                        yield return null; // should update ~60 times a sec
                     }
                     colorTime = Time.time;
                     nextColor = UnityEngine.Random.Range(0, _worldcolors.Count);
@@ -178,24 +185,32 @@ public class GameControl : MonoBehaviour
                     colorTime = Time.time;
                     transition = 5;
                     oldColor = _levelColor;
-                    while ((Time.time < colorTime + transition) && !Player.activeSelf) 
+                    Debug.Log("Change color");
+                    while ((Time.time < colorTime + transition) && !Player.activeSelf && Instance != null) 
                     {
                         _levelColor = Color.Lerp(oldColor, _deadColor, (Time.time - colorTime) / transition);
+                        //_worldMaterial.SetColor("_Color", _levelColor);
                         _worldMaterial.SetColor("_Color", _levelColor);
-                        await Task.Delay(16); // should update ~60 times a sec
+                        yield return null; // should update ~60 times a sec
                     }
                     colorTime = Time.time;
                     transition = 5;
                     oldColor = _levelColor;
-                    while ((Time.time < colorTime + transition) && !Player.activeSelf)
+                    Debug.Log("Change color");
+                    while ((Time.time < colorTime + transition) && !Player.activeSelf && Instance != null)
                     {
                         _levelColor = Color.Lerp(oldColor, Color.clear, (Time.time - colorTime) / transition);
+                        //_worldMaterial.SetColor("_Color", _levelColor);
                         _worldMaterial.SetColor("_Color", _levelColor);
-                        await Task.Delay(16); // should update ~60 times a sec
+                        if (_worldMaterial.GetColor("_Color")!=_levelColor)
+                        {
+                            Debug.Log("The Shader no work");
+                        }
+                        yield return null; // should update ~60 times a sec
                     }
-                    return;
+                    yield break;
                 }
-                await Task.Delay(16); // should update ~60 times a sec
+                yield return null; // should update ~60 times a sec
             }
         }
     }
@@ -241,7 +256,7 @@ public class GameControl : MonoBehaviour
         _levelColor = _worldcolors[0];
         _worldMaterial.SetColor("_Color", _levelColor);
         //_windMaterial.SetColor("_TintColor", _levelColor);
-        ColorChanger();
+        StartCoroutine(ColorChanger());
     }
 
 }
