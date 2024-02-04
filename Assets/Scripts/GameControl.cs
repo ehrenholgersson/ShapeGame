@@ -183,7 +183,7 @@ public class GameControl : MonoBehaviour
                 else
                 {
                     colorTime = Time.time;
-                    transition = 5;
+                    transition = 3;
                     oldColor = _levelColor;
                     Debug.Log("Change color");
                     while ((Time.time < colorTime + transition) && !Player.activeSelf && Instance != null) 
@@ -194,7 +194,7 @@ public class GameControl : MonoBehaviour
                         yield return null; // should update ~60 times a sec
                     }
                     colorTime = Time.time;
-                    transition = 5;
+                    transition = 3;
                     oldColor = _levelColor;
                     Debug.Log("Change color");
                     while ((Time.time < colorTime + transition) && !Player.activeSelf && Instance != null)
