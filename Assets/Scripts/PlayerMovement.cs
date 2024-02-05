@@ -39,7 +39,7 @@ public class PlayerMovement : MonoBehaviour, IKillable
             if (Mathf.Abs(_jumpRequest - Time.time) < _jumpInputTime && _rb.velocity.y < 10 && Time.time - _lastJump > (_groundCheckLeniency + 0.025f))
             {
                 _rb.velocity += new Vector2(0, 8);
-                _rb.angularVelocity = (_rb.velocity.x + GameControl.Instance.WorldSpeed) * -10;
+                _rb.angularVelocity = (_rb.velocity.x + GameControl.Instance.WorldSpeed) * -14;
                 _jumpRequest = -10;
                 // this was allowing 2 "grounded" jumps if key was hit just before then during collision with terrain, need to make sure at least one physics tick + our input leniency have past since last jump to prevent this, also remove any groudcheck leniency
                 _groundedTime = 10;
