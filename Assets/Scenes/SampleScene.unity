@@ -5271,6 +5271,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7fd61fc1cdd26b449a47af368c6b581, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _groundCheckLeniency: 0.15
+  _jumpInputTime: 0.1
   _giblet: {fileID: 6061670177736297642, guid: 52b60e440cfef844aa765e8908149660, type: 3}
 --- !u!61 &429010181
 BoxCollider2D:
