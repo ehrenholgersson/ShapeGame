@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bda280978c2d934190faf3db423a62b, type: 3}
+  m_Name: Terrain Piece List
+  m_EditorClassIdentifier: 
+  pieces:
+  - {fileID: 8987119891433996847, guid: 1b163b2e962bc3f43a174d31159c4052, type: 3}
+  - {fileID: 5594102246364916060, guid: 70f3a79740971ac4e8c9ba8c912ba8af, type: 3}
+  - {fileID: 8987119891433996847, guid: ab80b30fc1b977646ab0812b2fff972a, type: 3}
+  - {fileID: 8987119891433996847, guid: fa3a39cbe965c874099417b76414d6a6, type: 3}
+  - {fileID: 8987119891433996847, guid: 164699e608f1edf41833fa299ed6f2d6, type: 3}
+  - {fileID: 5594102246364916060, guid: b1c3385365b92fa469c6bba8d5c63e6e, type: 3}
+  - {fileID: 8987119891433996847, guid: 42b0619d7af199740870bd9ba2ba6431, type: 3}

@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public enum TerrainTypes { Start, Easy, Medium, Hard }
 
 public class GameControl : MonoBehaviour
 {
@@ -17,11 +19,10 @@ public class GameControl : MonoBehaviour
     [SerializeField] ParticleSystem _windParticles;
     [SerializeField] GameObject _gameOver;
     [SerializeField] GameObject _player;
-    [SerializeField] public TerrainList _terrainList; // check if this needs to be private or a function
+
     [SerializeField] float _worldSpeed;
 
     [SerializeField] Material _worldMaterial;
-    //[SerializeField] Material _windMaterial;
     Color _levelColor = Color.grey;
     [SerializeField] float _maxColTransitionTime;
     [SerializeField] float _minColTransitionTime;
@@ -29,9 +30,11 @@ public class GameControl : MonoBehaviour
     [SerializeField] float _minColHoldTime;
     [SerializeField] Color _deadColor;
     [SerializeField] List<Color> _worldcolors = new List<Color>();
-    [SerializeField] Vector3 _firstTerrainPos = Vector3.zero;
 
-    List<GameObject> _terrainPool = new List<GameObject>();
+    [SerializeField] Vector3 _firstTerrainPos = Vector3.zero;
+    [SerializeField] List<TerrainList> _terrainLists;
+    List<List<GameObject>> _terrainPools = new List<List<GameObject>>();
+    List<GameObject> _terrainBlank = new List<GameObject>();
 
     // Terrain vars previously in Trasher.cs
     private GameObject _lastSpawned;
@@ -49,7 +52,7 @@ public class GameControl : MonoBehaviour
     public static float RunTimer { get => _instance._timer; }
     public static Color LevelColor { get => _instance._levelColor; }
 
-    public static List<GameObject> Pool { get => _instance._terrainPool; }
+    public static List<List<GameObject>> Pools { get => _instance._terrainPools; }
 
     public static GameObject LastSpawned { get => _instance._lastSpawned; }
     public static float LastSpawnedSize { get => _instance._lastSpawnSize; set => _instance._lastSpawnSize = value; }
@@ -140,33 +143,59 @@ public class GameControl : MonoBehaviour
         SetupTerrain();
     }
 
-    void SetupTerrain()
+    void SetupTerrain() // these sholud be a list of lists (or array?) so each could be run through programatically, could have an enumerator to specify use/difficulty of each
     {
-        foreach (GameObject terrainPiece in _terrainList.pieces)
+        int i = 0;
+        while (i < _terrainLists.Count)
         {
-            GameObject newTerrain = Instantiate(terrainPiece);
-            _terrainPool.Add(newTerrain);
-            newTerrain.SetActive(false);
+            List<GameObject> newTerrainList = new List<GameObject>();
+            foreach (GameObject terrainPiece in _terrainLists[i].pieces)
+            {
+                GameObject newTerrain = Instantiate(terrainPiece);
+                newTerrainList.Add(newTerrain);
+                newTerrain.SetActive(false);
+                newTerrain.GetComponent<TerrainMovement>()?.SetPool(newTerrainList);
+            }
+            _terrainPools.Add(newTerrainList);
+            i++;
         }
     }
 
     public void SpawnTerrain()
     {
-        GameObject toSpawn = _terrainPool[UnityEngine.Random.Range(0, _terrainPool.Count)];
+        GameObject toSpawn;
+        do
+        {
+            int rng = UnityEngine.Random.Range(0, _terrainPools.Count);
+            toSpawn = _terrainPools[1][rng];
+            if (toSpawn == null)
+                Debug.Log("Terrain Pool missing piece at index: " + rng);
+        } while (toSpawn == null);
         toSpawn.SetActive(true);
         _lastSpawned = toSpawn;
-        //if (Trasher.LastSpawned == null) 
-        //{
-        //    toSpawn.transform.position = _firstTerrainPos;
-        //}
+    }
+
+    public void SpawnTerrain(List<GameObject> pool)
+    {
+        GameObject toSpawn;
+        do
+        {
+            int rng = UnityEngine.Random.Range(0, pool.Count);
+            Debug.Log("rng = " + rng);
+            toSpawn = pool[rng];
+            if (toSpawn == null)
+                Debug.Log("Terrain Pool missing piece at index: " + rng);
+        } while (toSpawn == null);
+        toSpawn.SetActive(true);
+        _lastSpawned = toSpawn;
     }
 
     void Start()
     {
         //spawn the level
-        SpawnTerrain();
-        SpawnTerrain();
-        SpawnTerrain();
+        SpawnTerrain(_terrainPools[(int)TerrainTypes.Start]);
+        SpawnTerrain(_terrainPools[(int)TerrainTypes.Easy]);
+        SpawnTerrain(_terrainPools[(int)TerrainTypes.Easy]);
 
 
         // set wind particles speed to world speed
@@ -230,7 +259,6 @@ public class GameControl : MonoBehaviour
                     while ((Time.time < colorTime + transition) && !Player.activeSelf && Instance != null) 
                     {
                         _levelColor = Color.Lerp(oldColor, _deadColor, (Time.time - colorTime) / transition);
-                        //_worldMaterial.SetColor("_Color", _levelColor);
                         _worldMaterial.SetColor("_Color", _levelColor);
                         yield return null; // should update ~60 times a sec
                     }
@@ -239,17 +267,16 @@ public class GameControl : MonoBehaviour
                     oldColor = _levelColor;
                     Debug.Log("Change color");
                     // commented so I can still see level when dead for testing
-                    //while ((Time.time < colorTime + transition) && !Player.activeSelf && Instance != null)
-                    //{
-                    //    _levelColor = Color.Lerp(oldColor, Color.clear, (Time.time - colorTime) / transition);
-                    //    //_worldMaterial.SetColor("_Color", _levelColor);
-                    //    _worldMaterial.SetColor("_Color", _levelColor);
-                    //    if (_worldMaterial.GetColor("_Color")!=_levelColor)
-                    //    {
-                    //        Debug.Log("The Shader no work");
-                    //    }
-                    //    yield return null; // should update ~60 times a sec
-                    //}
+                    while ((Time.time < colorTime + transition) && !Player.activeSelf && Instance != null)
+                    {
+                        _levelColor = Color.Lerp(oldColor, Color.clear, (Time.time - colorTime) / transition);
+                        _worldMaterial.SetColor("_Color", _levelColor);
+                        if (_worldMaterial.GetColor("_Color") != _levelColor)
+                        {
+                            Debug.Log("The Shader no work");
+                        }
+                        yield return null; // should update ~60 times a sec
+                    }
                     yield break;
                 }
                 yield return null; // should update ~60 times a sec
@@ -270,35 +297,8 @@ public class GameControl : MonoBehaviour
     }
     public void Restart() // reset everything back to how it started, not sure if I should just reload the scene?
     {
-        // destroy objects tagged as "reset"
-        GameObject[] all = GameObject.FindGameObjectsWithTag("Reset"); 
-        Debug.Log("found " + all.Length + " gameobjects");
-        foreach (GameObject g in all)
-        {
-            Destroy(g);
-            Debug.Log("found and destroyed"+g.name);
-        }
-        // reset the player
-        _player.SetActive(true);
-        _player.transform.position = new Vector3(-4, -3, 0);
-        // instantiate some new terrain (these should be pooled in future)
-        GameObject go = Instantiate(_terrainList.pieces[0]);
-        go.transform.position = Vector3.zero;
-        int rng = UnityEngine.Random.Range(1, GameControl._instance._terrainList.pieces.Count);
-        go = Instantiate(GameControl._instance._terrainList.pieces[rng]);
-        go.transform.position = new Vector3(30,0,0);
-        rng = UnityEngine.Random.Range(1, GameControl._instance._terrainList.pieces.Count);
-        go = Instantiate(GameControl._instance._terrainList.pieces[rng]);
-        go.transform.position = new Vector3(60, 0, 0);
-        _lastSpawned = go;
-        // disable the gameover screen
-        _gameOver.SetActive(false);
-        _timer = 0;
-        // reset our colours
-        _levelColor = _worldcolors[0];
-        _worldMaterial.SetColor("_Color", _levelColor);
-        //_windMaterial.SetColor("_TintColor", _levelColor);
-        StartCoroutine(ColorChanger());
+        SceneManager.LoadScene(0);
+
     }
 
 }

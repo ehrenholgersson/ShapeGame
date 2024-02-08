@@ -10,12 +10,12 @@ public class TerrainMovement : MonoBehaviour
     private void Awake()
     {
         _length = transform.Find("Bounds")?.GetComponent<Collider2D>()?.bounds.size.x ?? 30;
-        _pool = GameControl.Pool;
     }
+    public void SetPool(List<GameObject> pool) => _pool = pool;
     private void OnEnable()
     {
         GameControl.LastSpawnedSize = _length;
-        if (_pool.Contains(gameObject))
+        if (_pool != null && _pool.Contains(gameObject)) 
         {
             _pool.Remove(gameObject);
         }
@@ -33,7 +33,10 @@ public class TerrainMovement : MonoBehaviour
     private void OnDisable()
     {
         //Trasher.TerrainLength -= _length;
-        _pool.Add(gameObject);
+        if (_pool != null && !_pool.Contains(gameObject)) 
+        {
+            _pool.Add(gameObject);
+        }
     }
 
     // Update is called once per frame

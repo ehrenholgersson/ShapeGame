@@ -34,12 +34,12 @@ public class Trasher : MonoBehaviour
         Debug.Log("Trash collider has an object");
         if (collision.gameObject.name.Contains("World"))
         {
-            Destroy(collision.gameObject);
+            collision.gameObject.SetActive(false);
             SpawnNew();
         }
         else if (collision.transform.parent.name.Contains("World"))
         {
-            Destroy(collision.transform.parent.gameObject);
+            collision.transform.parent.gameObject.SetActive(false);
             SpawnNew();
         }
     }
