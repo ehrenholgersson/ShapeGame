@@ -5272,7 +5272,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _groundCheckLeniency: 0.1
-  _jumpInputTime: 0.1
+  _jumpInputTime: 0.2
   _giblet: {fileID: 6061670177736297642, guid: 52b60e440cfef844aa765e8908149660, type: 3}
 --- !u!61 &429010181
 BoxCollider2D:
@@ -6531,7 +6531,7 @@ GameObject:
   - component: {fileID: 1505834968}
   - component: {fileID: 1505834967}
   - component: {fileID: 1505834966}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Trash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6585,7 +6585,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1505834965}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -41.01, y: -0.25, z: 0.1129837}
+  m_LocalPosition: {x: -1.56, y: -0.12, z: 0.1129837}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

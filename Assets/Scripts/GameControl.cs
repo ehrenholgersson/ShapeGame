@@ -29,6 +29,14 @@ public class GameControl : MonoBehaviour
     [SerializeField] float _minColHoldTime;
     [SerializeField] Color _deadColor;
     [SerializeField] List<Color> _worldcolors = new List<Color>();
+    [SerializeField] Vector3 _firstTerrainPos = Vector3.zero;
+
+    List<GameObject> _terrainPool = new List<GameObject>();
+
+    // Terrain vars previously in Trasher.cs
+    private GameObject _lastSpawned;
+    private float _lastSpawnSize;
+
 
     #endregion
 
@@ -40,6 +48,12 @@ public class GameControl : MonoBehaviour
     public float WorldSpeed { get => _worldSpeed; }
     public static float RunTimer { get => _instance._timer; }
     public static Color LevelColor { get => _instance._levelColor; }
+
+    public static List<GameObject> Pool { get => _instance._terrainPool; }
+
+    public static GameObject LastSpawned { get => _instance._lastSpawned; }
+    public static float LastSpawnedSize { get => _instance._lastSpawnSize; set => _instance._lastSpawnSize = value; }
+    public static Vector3 FirstTerrainPos { get => _instance?._firstTerrainPos ?? Vector3.zero; }
 
     #endregion
 
@@ -123,9 +137,36 @@ public class GameControl : MonoBehaviour
 
         Application.targetFrameRate = 120;
         _instance = this;
+        SetupTerrain();
     }
+
+    void SetupTerrain()
+    {
+        foreach (GameObject terrainPiece in _terrainList.pieces)
+        {
+            GameObject newTerrain = Instantiate(terrainPiece);
+            _terrainPool.Add(newTerrain);
+            newTerrain.SetActive(false);
+        }
+    }
+
+    public void SpawnTerrain()
+    {
+        GameObject toSpawn = _terrainPool[UnityEngine.Random.Range(0, _terrainPool.Count)];
+        toSpawn.SetActive(true);
+        _lastSpawned = toSpawn;
+        //if (Trasher.LastSpawned == null) 
+        //{
+        //    toSpawn.transform.position = _firstTerrainPos;
+        //}
+    }
+
     void Start()
     {
+        //spawn the level
+        SpawnTerrain();
+        SpawnTerrain();
+        SpawnTerrain();
 
 
         // set wind particles speed to world speed
@@ -197,17 +238,18 @@ public class GameControl : MonoBehaviour
                     transition = 3;
                     oldColor = _levelColor;
                     Debug.Log("Change color");
-                    while ((Time.time < colorTime + transition) && !Player.activeSelf && Instance != null)
-                    {
-                        _levelColor = Color.Lerp(oldColor, Color.clear, (Time.time - colorTime) / transition);
-                        //_worldMaterial.SetColor("_Color", _levelColor);
-                        _worldMaterial.SetColor("_Color", _levelColor);
-                        if (_worldMaterial.GetColor("_Color")!=_levelColor)
-                        {
-                            Debug.Log("The Shader no work");
-                        }
-                        yield return null; // should update ~60 times a sec
-                    }
+                    // commented so I can still see level when dead for testing
+                    //while ((Time.time < colorTime + transition) && !Player.activeSelf && Instance != null)
+                    //{
+                    //    _levelColor = Color.Lerp(oldColor, Color.clear, (Time.time - colorTime) / transition);
+                    //    //_worldMaterial.SetColor("_Color", _levelColor);
+                    //    _worldMaterial.SetColor("_Color", _levelColor);
+                    //    if (_worldMaterial.GetColor("_Color")!=_levelColor)
+                    //    {
+                    //        Debug.Log("The Shader no work");
+                    //    }
+                    //    yield return null; // should update ~60 times a sec
+                    //}
                     yield break;
                 }
                 yield return null; // should update ~60 times a sec
@@ -248,7 +290,7 @@ public class GameControl : MonoBehaviour
         rng = UnityEngine.Random.Range(1, GameControl._instance._terrainList.pieces.Count);
         go = Instantiate(GameControl._instance._terrainList.pieces[rng]);
         go.transform.position = new Vector3(60, 0, 0);
-        GameObject.FindAnyObjectByType<Trasher>().lastSpawned = go;
+        _lastSpawned = go;
         // disable the gameover screen
         _gameOver.SetActive(false);
         _timer = 0;
