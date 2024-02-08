@@ -6,7 +6,10 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+#region Enumerators
 public enum TerrainTypes { Start, Easy, Medium, Hard }
+
+#endregion
 
 public class GameControl : MonoBehaviour
 {
@@ -143,6 +146,26 @@ public class GameControl : MonoBehaviour
         SetupTerrain();
     }
 
+    void Start()
+    {
+        //spawn the level
+        SpawnTerrain(_terrainPools[(int)TerrainTypes.Start]);
+        SpawnTerrain(_terrainPools[(int)TerrainTypes.Easy]);
+        SpawnTerrain(_terrainPools[(int)TerrainTypes.Easy]);
+
+
+        // set wind particles speed to world speed
+        var velocity = _windParticles.velocityOverLifetime;
+        velocity.x = new ParticleSystem.MinMaxCurve(-_worldSpeed, -_worldSpeed);
+        velocity.y = new ParticleSystem.MinMaxCurve(0, 0);//(0.1f * Random.Range(-10,10), 0.1f * Random.Range(-10, 10));
+        velocity.z = new ParticleSystem.MinMaxCurve(0, 0);
+        _levelColor = _worldcolors[0];
+        _worldMaterial.SetColor("_Color", _levelColor);
+        //_windMaterial.SetColor("_TintColor", _levelColor);
+        StartCoroutine(ColorChanger());
+    }
+    #endregion
+
     void SetupTerrain() // these sholud be a list of lists (or array?) so each could be run through programatically, could have an enumerator to specify use/difficulty of each
     {
         int i = 0;
@@ -190,26 +213,6 @@ public class GameControl : MonoBehaviour
         _lastSpawned = toSpawn;
     }
 
-    void Start()
-    {
-        //spawn the level
-        SpawnTerrain(_terrainPools[(int)TerrainTypes.Start]);
-        SpawnTerrain(_terrainPools[(int)TerrainTypes.Easy]);
-        SpawnTerrain(_terrainPools[(int)TerrainTypes.Easy]);
-
-
-        // set wind particles speed to world speed
-        var velocity = _windParticles.velocityOverLifetime;
-        velocity.x = new ParticleSystem.MinMaxCurve(-_worldSpeed, -_worldSpeed);
-        velocity.y = new ParticleSystem.MinMaxCurve(0, 0);//(0.1f * Random.Range(-10,10), 0.1f * Random.Range(-10, 10));
-        velocity.z = new ParticleSystem.MinMaxCurve(0, 0);
-        _levelColor = _worldcolors[0];
-        _worldMaterial.SetColor("_Color", _levelColor);
-        //_windMaterial.SetColor("_TintColor", _levelColor);
-        StartCoroutine(ColorChanger());
-    }
-    #endregion
-
     IEnumerator ColorChanger()
     {
         if (!_worldMaterial.HasProperty("_Color"))
@@ -245,7 +248,7 @@ public class GameControl : MonoBehaviour
                         _worldMaterial.SetColor("_Color", _levelColor);
                         // _windMaterial.SetColor("_TintColor", _levelColor);
 
-                        yield return new WaitForFixedUpdate(); ; // should update ~60 times a sec
+                        yield return new WaitForFixedUpdate(); 
                     }
                     colorTime = Time.time;
                     nextColor = UnityEngine.Random.Range(0, _worldcolors.Count);
@@ -260,7 +263,7 @@ public class GameControl : MonoBehaviour
                     {
                         _levelColor = Color.Lerp(oldColor, _deadColor, (Time.time - colorTime) / transition);
                         _worldMaterial.SetColor("_Color", _levelColor);
-                        yield return null; // should update ~60 times a sec
+                        yield return new WaitForFixedUpdate();
                     }
                     colorTime = Time.time;
                     transition = 3;
@@ -275,17 +278,17 @@ public class GameControl : MonoBehaviour
                         {
                             Debug.Log("The Shader no work");
                         }
-                        yield return null; // should update ~60 times a sec
+                        yield return new WaitForFixedUpdate();
                     }
                     yield break;
                 }
-                yield return null; // should update ~60 times a sec
+                yield return null; 
             }
         }
     }
     private void Update()
     {
-        if ( Player.activeSelf)
+        if ( Player.activeSelf) // only run timer when player is alive
         {
             _timer += Time.deltaTime;
             foreach (TextMeshProUGUI tmp in _timeReadouts)
@@ -295,7 +298,7 @@ public class GameControl : MonoBehaviour
         }
        
     }
-    public void Restart() // reset everything back to how it started, not sure if I should just reload the scene?
+    public void Restart() // reset everything back to how it started
     {
         SceneManager.LoadScene(0);
 
