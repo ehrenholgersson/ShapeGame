@@ -166,18 +166,22 @@ public class GameControl : MonoBehaviour
     }
     #endregion
 
-    void SetupTerrain() // these sholud be a list of lists (or array?) so each could be run through programatically, could have an enumerator to specify use/difficulty of each
+    void SetupTerrain() // load then disable all terrain pieces and add to lists of available terrain by type (start(0) easy(1) med(2) hard(3))
     {
         int i = 0;
         while (i < _terrainLists.Count)
         {
             List<GameObject> newTerrainList = new List<GameObject>();
-            foreach (GameObject terrainPiece in _terrainLists[i].pieces)
+            // for all lists other than start we want multiples of each terrain piece, so loop through twice
+            for (int j = 0; (j < 2 && i > 0)||j<1; j++)
             {
-                GameObject newTerrain = Instantiate(terrainPiece);
-                newTerrainList.Add(newTerrain);
-                newTerrain.SetActive(false);
-                newTerrain.GetComponent<TerrainMovement>()?.SetPool(newTerrainList);
+                foreach (GameObject terrainPiece in _terrainLists[i].pieces)
+                {
+                    GameObject newTerrain = Instantiate(terrainPiece);
+                    newTerrainList.Add(newTerrain);
+                    newTerrain.SetActive(false);
+                    newTerrain.GetComponent<TerrainMovement>()?.SetPool(newTerrainList);
+                }
             }
             _terrainPools.Add(newTerrainList);
             i++;
