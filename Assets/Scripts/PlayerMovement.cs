@@ -146,6 +146,7 @@ public class PlayerMovement : MonoBehaviour, IKillable
 
         // change particle colors
         _particle.startColor = GameControl.LevelColor;
+
         _groundedTime += Time.deltaTime;
     }
 

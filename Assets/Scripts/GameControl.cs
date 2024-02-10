@@ -65,6 +65,7 @@ public class GameControl : MonoBehaviour
 
     #region Initialization
     // Start is called before the first frame update
+
     private void Awake()
     {
         // setup platform specific elements
