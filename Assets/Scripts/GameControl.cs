@@ -295,7 +295,7 @@ public class GameControl : MonoBehaviour
                     }
                     // wait another 5 seconds then go to title if not reset 
                     colorTime = Time.time;
-                    transition = 5;
+                    transition = 0.5f;
                     while ((Time.time < colorTime + transition) && !Player.activeSelf && Instance != null)
                     {
                         yield return new WaitForFixedUpdate();
