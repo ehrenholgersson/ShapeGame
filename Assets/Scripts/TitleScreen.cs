@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class TitleScreen : MonoBehaviour
@@ -14,6 +16,8 @@ public class TitleScreen : MonoBehaviour
     [SerializeField] float _minColHoldTime;
     [SerializeField] Color _deadColor;
     [SerializeField] List<Color> _worldcolors = new List<Color>();
+
+    [SerializeField] List<TextMeshProUGUI> texts = new List<TextMeshProUGUI>();
 
     static TitleScreen _instance;
 
@@ -31,6 +35,28 @@ public class TitleScreen : MonoBehaviour
         _worldMaterial.SetColor("_Color", _levelColor);
         //_windMaterial.SetColor("_TintColor", _levelColor);
         StartCoroutine(ColorChanger());
+    }
+
+    void Update()
+    {
+#if UNITY_ANDROID
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                if (Input.GetTouch(i).phase == TouchPhase.Ended)
+                {
+                    SceneManager.LoadScene(1);
+                }
+            }
+        }
+#endif
+#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX || UNITY_WEBGL
+        if (Input.GetKey(KeyCode.Space))
+        {
+            SceneManager.LoadScene(1);
+        }
+#endif
     }
 
     IEnumerator ColorChanger()
@@ -73,6 +99,14 @@ public class TitleScreen : MonoBehaviour
 
                 yield return null;
             }
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        foreach (TextMeshProUGUI txt in texts)
+        {
+            txt.color = _levelColor;
         }
     }
 }

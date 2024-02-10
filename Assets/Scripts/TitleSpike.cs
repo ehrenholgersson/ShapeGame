@@ -32,7 +32,7 @@ public class TitleSpike : MonoBehaviour
     {
         if (Time.time - _spawnTime > _lifeTime + _spawnDelay)
         {
-            transform.position = _cam.ScreenToWorldPoint(new Vector3(_cam.pixelWidth, Random.Range(0,_cam.pixelHeight))) + new Vector3(5,0,0);
+            transform.position = _cam.ScreenToWorldPoint(new Vector3(_cam.pixelWidth, Random.Range(0,_cam.pixelHeight))) + new Vector3(5,0,5);
             _rb.velocity = new Vector3( - 10, 0, 0);
             _spawnTime = Time.time;
             _spawnDelay = Random.Range(_minSpawnDelay, _maxSpawnDelay);

@@ -293,6 +293,14 @@ public class GameControl : MonoBehaviour
                         }
                         yield return new WaitForFixedUpdate();
                     }
+                    // wait another 5 seconds then go to title if not reset 
+                    colorTime = Time.time;
+                    transition = 5;
+                    while ((Time.time < colorTime + transition) && !Player.activeSelf && Instance != null)
+                    {
+                        yield return new WaitForFixedUpdate();
+                    }
+                        SceneManager.LoadScene(0);
                     yield break;
                 }
                 yield return null; 
@@ -313,7 +321,7 @@ public class GameControl : MonoBehaviour
     }
     public void Restart() // reset everything back to how it started
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(1);
 
     }
 
