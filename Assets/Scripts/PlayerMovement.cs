@@ -16,6 +16,14 @@ public class PlayerMovement : MonoBehaviour, IKillable
     Color _transperent = new Color(0, 0, 0, 0);
     [SerializeField] GameObject _giblet;
 
+#if UNITY_ANDROID
+    // Touch input stuff
+    [Header("Touch Input")]
+    TouchInputs _touchIndex;
+    [SerializeField] float _touchTapDuration;
+    [SerializeField] float _touchSwipeDeadZone;
+#endif
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,6 +35,65 @@ public class PlayerMovement : MonoBehaviour, IKillable
     // Update is called once per frame
     void Update()
     {
+        bool leftInput = false;
+        bool rightInput = false;
+
+#if UNITY_ANDROID
+        if (Input.touchCount > 0) 
+        {
+            for(int i = 0; i < Input.touchCount; i++)
+            {
+                Touch touch = Input.GetTouch(i);
+                if (touch.phase == TouchPhase.Ended)
+                {
+                    // check if we have recorded this touch previously
+                    if (_touchIndex.TryGetTouch(touch.fingerId, out TouchData t))
+                    {
+                        if (t.Duration < _touchTapDuration)  // if the touch ended quickly enough for us to consider it a tap
+                        {
+                            _jumpRequest = Time.time;
+                        }
+                        _touchIndex.Remove(t);
+                    }
+                    else // if we have no record assume it was a very quick tap?
+                    {
+                        _jumpRequest = Time.time;
+                    }
+                }
+                else
+                {
+                    if (_touchIndex.TryGetTouch(touch.fingerId, out TouchData t))
+                    {
+                        if (touch.position.x < t.StartPosition.x - _touchSwipeDeadZone)
+                        {
+                            leftInput = true;
+                        }
+                        else if (touch.position.x > t.StartPosition.x + _touchSwipeDeadZone)
+                        {
+                            rightInput = true;
+                        }
+                    }
+                    else
+                    {
+                        _touchIndex.Add(touch); // newinput, record in in _touchIndex so we can use its fingerId to get duration and positional changes
+                    }
+                }
+            }
+        }
+#endif
+
+#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX || UNITY_WEBGL
+
+        if (Input.GetAxis("Horizontal") < -0.2f)
+        {
+            leftInput = true;
+        }
+        else if (Input.GetAxis("Horizontal") > 0.2f)
+        {
+            rightInput = true;
+        }
+#endif
+
         // record time the jump key was hit so we can still respond if player is slightly early
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -47,12 +114,12 @@ public class PlayerMovement : MonoBehaviour, IKillable
             }
         }
         if (_grounded) // still need to use bool for left/right, otherwise we get a big movement boost on jumping with key held in
-        { 
-            if (Input.GetKey("a")&&_rb.velocity.x>-10)
+        {
+            if (leftInput && _rb.velocity.x > -10)
             {
                 _rb.velocity += new Vector2(-35, 0) * Time.deltaTime;
             }
-            else if (Input.GetKey("d")&&_rb.velocity.y<10) 
+            else if (rightInput && _rb.velocity.y < 10) 
             {
                 _rb.velocity += new Vector2(35, 0) * Time.deltaTime;
             }
