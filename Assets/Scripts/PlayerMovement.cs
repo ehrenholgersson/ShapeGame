@@ -46,6 +46,7 @@ public class PlayerMovement : MonoBehaviour, IKillable
                 Touch touch = Input.GetTouch(i);
                 if (touch.phase == TouchPhase.Ended)
                 {
+                    Debug.Log("end of touch");
                     // check if we have recorded this touch previously
                     if (_touchIndex.TryGetTouch(touch.fingerId, out TouchData t))
                     {

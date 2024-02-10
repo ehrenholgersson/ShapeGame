@@ -44,6 +44,10 @@ public struct TouchInputs
 
     public bool TryGetTouch(int id, out TouchData t)
     {
+        if (Touches ==null) // becuase C# won't allow for parameterless constructors we need to initialize the list here
+        {
+            Touches = new List<TouchData>();
+        }
         t = new TouchData();
         foreach (TouchData touch in Touches)
         {
@@ -58,11 +62,20 @@ public struct TouchInputs
 
     public void Add(TouchData touch)
     {
+        if (Touches == null)// becuase C# won't allow for parameterless constructors we need to initialize the list here
+        {
+            Touches = new List<TouchData>();
+        }
         Touches.Add(touch);
     }
 
     public void Add(Touch touch)
     {
+        if (Touches == null)// becuase C# won't allow for parameterless constructors we need to initialize the list here
+        {
+            Touches = new List<TouchData>();
+        }
+
         Touches.Add(new TouchData(touch));
     }
 

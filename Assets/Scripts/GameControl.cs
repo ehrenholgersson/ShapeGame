@@ -70,7 +70,7 @@ public class GameControl : MonoBehaviour
         // setup platform specific elements
         #region Platform Specific Setup 
 
-#if UNITY_WEBGL || UNITY_ANDROID // will have seperate UI for mobile, but being lazy for now
+#if UNITY_WEBGL // will have seperate UI for mobile, but being lazy for now
         Debug.Log("Running WebGL");
         foreach (GameObject ui in GameObject.FindGameObjectsWithTag("WebUI"))
         {
@@ -127,8 +127,16 @@ public class GameControl : MonoBehaviour
             if (ui.name.Contains("GameOver"))
             {
                 _gameOver = ui;
+                ui.SetActive(false);
             }
-            ui.SetActive(false);
+            else if (ui.name.Contains("Timer"))
+            {
+                if (ui.TryGetComponent<TextMeshProUGUI>(out TextMeshProUGUI tmp))
+                {
+                    _timeReadouts.Add(tmp);
+                }
+            }
+
         }
         foreach (GameObject ui in GameObject.FindGameObjectsWithTag("WebUI"))
         {

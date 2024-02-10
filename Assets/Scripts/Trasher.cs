@@ -7,6 +7,11 @@ using UnityEngine;
 // * Terrain should be grouped by difficulty, with the more difficult obstacles spawning more frequently over time
 public class Trasher : MonoBehaviour 
 {
+    private void Awake()
+    {
+        transform.position = new Vector3(Camera.main.ScreenToWorldPoint(Vector3.zero).x,transform.position.y,transform.position.z);
+    }
+
     public void OnTriggerExit2D(Collider2D collision)
     {
         Debug.Log("Trash collider has an object");
