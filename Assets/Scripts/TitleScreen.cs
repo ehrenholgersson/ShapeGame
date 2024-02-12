@@ -15,6 +15,7 @@ public class TitleScreen : MonoBehaviour
     [SerializeField] float _minColHoldTime;
     [SerializeField] Color _deadColor;
     [SerializeField] List<Color> _worldcolors = new List<Color>();
+    [SerializeField] TextMeshProUGUI _startText;
 
     [SerializeField] List<TextMeshProUGUI> texts = new List<TextMeshProUGUI>();
 
@@ -34,6 +35,9 @@ public class TitleScreen : MonoBehaviour
         _worldMaterial.SetColor("_Color", _levelColor);
         //_windMaterial.SetColor("_TintColor", _levelColor);
         StartCoroutine(ColorChanger());
+#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX || UNITY_WEBGL
+        _startText.text = "Space to Start";
+#endif
     }
 
     void Update()

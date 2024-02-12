@@ -513,6 +513,7 @@ MonoBehaviour:
   - {r: 1, g: 0.44850335, b: 0, a: 1}
   - {r: 0.93518776, g: 0.11764705, b: 1, a: 1}
   - {r: 0.11764705, g: 0.16050686, b: 1, a: 1}
+  _startText: {fileID: 1204557265}
   texts:
   - {fileID: 349880459}
   - {fileID: 1204557265}
@@ -873,8 +874,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -58.9}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 0, y: -61.427784}
+  m_SizeDelta: {x: 233.8722, y: 55.0556}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1204557265
 MonoBehaviour:
