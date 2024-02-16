@@ -21,7 +21,7 @@ public class PlayerMovement : MonoBehaviour, IKillable
     [Header("Touch Input")]
     TouchInputs _touchIndex;
     [SerializeField] float _touchTapDuration;
-    [SerializeField] float _touchSwipeDeadZone;
+    [SerializeField] float _touchSwipeDeadZone; // how far a touch needs to move to be considered a swipe and not a tap. this has a value of 10 in the inspector at time of writing, this was a completely uninformed guess but seems to work perfectly... need to stay aware of this in case jumping starts to feel unresponsive
 #endif
 
     // Start is called before the first frame update
@@ -50,7 +50,7 @@ public class PlayerMovement : MonoBehaviour, IKillable
                     // check if we have recorded this touch previously
                     if (_touchIndex.TryGetTouch(touch.fingerId, out TouchData t))
                     {
-                        if (t.Duration < _touchTapDuration)  // if the touch ended quickly enough for us to consider it a tap
+                        if (t.Duration < _touchTapDuration && Mathf.Abs(touch.position.x - t.StartPosition.x)< _touchSwipeDeadZone)  // if the touch ended quickly enough for us to consider it a tap and we did not swipe
                         {
                             _jumpRequest = Time.time;
                         }
@@ -104,7 +104,7 @@ public class PlayerMovement : MonoBehaviour, IKillable
         //player controls
         if (_groundedTime < _groundCheckLeniency) // allow some leniency on ground check when jumping to help feel responsive
         {
-            if (Mathf.Abs(_jumpRequest - Time.time) < _jumpInputTime && _rb.velocity.y < 10 && Time.time - _lastJump > (_groundCheckLeniency + 0.025f))
+            if (Mathf.Abs(_jumpRequest - Time.time) < _jumpInputTime && _rb.velocity.y < 10 && Time.time - _lastJump > 0.5f)//(_groundCheckLeniency + 0.025f))
             {
                 _rb.velocity += new Vector2(0, 8);
                 _rb.angularVelocity = (_rb.velocity.x + GameControl.Instance.WorldSpeed) * -14;
