@@ -14,11 +14,11 @@ public class TerrainMovement : MonoBehaviour
     public void SetPool(List<GameObject> pool) => _pool = pool;
     private void OnEnable()
     {
-        GameControl.LastSpawnedSize = _length;
         if (_pool != null && _pool.Contains(gameObject)) 
         {
             _pool.Remove(gameObject);
         }
+        // by setting position here we save a getcomponent call
         if (GameControl.LastSpawned != null)
         {
             transform.position = new Vector3(GameControl.LastSpawned.transform.position.x + ((GameControl.LastSpawnedSize + _length) / 2), transform.position.y, transform.position.z);
@@ -27,6 +27,7 @@ public class TerrainMovement : MonoBehaviour
         {
             transform.position = GameControl.FirstTerrainPos;
         }
+        GameControl.LastSpawnedSize = _length;
         //Trasher.TerrainLength += _length;
     }
 

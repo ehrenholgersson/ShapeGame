@@ -5,6 +5,7 @@ using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 #region Enumerators
 public enum TerrainTypes { Start, Easy, Medium, Hard }
@@ -208,6 +209,11 @@ public class GameControl : MonoBehaviour
                 Debug.Log("Terrain Pool missing piece at index: " + rng);
         } while (toSpawn == null);
         toSpawn.SetActive(true);
+        //TerrainMovement newTerrain = toSpawn.GetComponent<TerrainMovement>();
+        //if (_lastSpawned!=null)
+        //{
+        //    toSpawn.transform.position = new Vector3(GameControl.LastSpawned.transform.position.x + ((GameControl.LastSpawnedSize + newTerrain.Length) / 2), transform.position.y, transform.position.z);
+        //}
         _lastSpawned = toSpawn;
     }
 

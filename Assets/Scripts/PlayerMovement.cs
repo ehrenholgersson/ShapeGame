@@ -21,7 +21,7 @@ public class PlayerMovement : MonoBehaviour, IKillable
     [Header("Touch Input")]
     TouchInputs _touchIndex;
     [SerializeField] float _touchTapDuration;
-    [SerializeField] float _touchSwipeDeadZone; // how far a touch needs to move to be considered a swipe and not a tap. this has a value of 10 in the inspector at time of writing, this was a completely uninformed guess but seems to work perfectly... need to stay aware of this in case jumping starts to feel unresponsive
+    [SerializeField] float _touchSwipeDeadZone; // how far a touch needs to move to be considered a swipe and not a tap. this has a value of 10 in the inspector at time of writing, this was a completely  uninformed guess but seems to work perfectly... need to stay aware of this in case jumping starts to feel unresponsive
 #endif
 
     // Start is called before the first frame update
